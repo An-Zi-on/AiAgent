@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="anzihe.com.common_template.mapper.UserMapper">
 
-    <resultMap id="BaseResultMap" type="anzihe.com.common_template.model.entity.User">
+    <resultMap id="BaseResultMap" type="anzihe.com.agent.model.entity.User">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
         <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>

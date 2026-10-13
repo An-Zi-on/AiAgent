@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="anzihe.com.common_template.mapper.SysUserMenuMapper">
 
-    <resultMap id="BaseResultMap" type="anzihe.com.common_template.model.entity.SysUserMenu">
+    <resultMap id="BaseResultMap" type="anzihe.com.agent.model.entity.SysUserMenu">
             <id property="id" column="id" />
             <result property="userId" column="user_id" />
             <result property="roleId" column="role_id" />

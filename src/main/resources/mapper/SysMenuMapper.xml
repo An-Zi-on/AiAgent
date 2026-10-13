@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="anzihe.com.common_template.mapper.SysMenuMapper">
 
-    <resultMap id="BaseResultMap" type="anzihe.com.common_template.model.entity.SysMenu">
+    <resultMap id="BaseResultMap" type="anzihe.com.agent.model.entity.SysMenu">
             <id property="id" column="id" />
             <result property="redirect" column="redirect" />
             <result property="parentId" column="parent_id" />

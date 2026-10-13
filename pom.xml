@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>anzihe.com</groupId>
-    <artifactId>common_template</artifactId>
+    <artifactId>agent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>common_template</name>
-    <description>通用后台模板</description>
+    <name>agent</name>
+    <description>Ai智能体</description>
     <packaging>jar</packaging>
 
     <properties>
@@ -180,7 +180,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>anzihe.com.common_template.CommonTemplateApplication</mainClass>
+                    <mainClass>anzihe.com.agent.CommonTemplateApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
