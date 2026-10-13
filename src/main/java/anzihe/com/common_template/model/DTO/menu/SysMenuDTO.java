@@ -5,7 +5,7 @@ import anzihe.com.common_template.common.validation.UpdateGroup;
 import lombok.Data;
 
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 import java.io.Serializable;
 
 /**

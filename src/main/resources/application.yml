@@ -3,16 +3,32 @@ spring:
     multipart:
       max-file-size: 2MB
       max-request-size: 2MB
+  ai:
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
+    openai:
+      base-url: https://api.deepseek.com
+      api-key: sk-8b6964d58d9a4d319f840084dafc1fff
+      chat:
+        model: deepseek-chat
+
+
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-    serialization:
-      write-dates-as-timestamps: false
+    datatype:
+      # Boot 4 的 Jackson 3 中 write-dates-as-timestamps 属于 DateTimeFeature，
+      # 已从 spring.jackson.serialization 移到 spring.jackson.datatype.datetime
+      datetime:
+        write-dates-as-timestamps: false
   application:
     name: common-template
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/an_project
+    url: jdbc:mysql://localhost:3306/an_ai
     username: root
     password: 20030517
 server:
@@ -28,16 +44,15 @@ mybatis-plus:
       logic-delete-field: isDelete
       logic-delete-value: 1
       logic-not-delete-value: 0
-knife4j:
-  enable: true
-  openapi:
-    title: common-template
-    version: 1.0
-    group:
-      default:
-        api-rule: package
-        api-rule-resources:
-          - anzihe.com.common_template.controller
+# knife4j 仅支持 Spring Boot 3，Boot 4 改用官方 springdoc
+# 文档地址: http://localhost:8123/api/swagger-ui/index.html
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+  packages-to-scan:
+    - anzihe.com.common_template.controller
 
 # 本地头像上传目录（相对运行目录）
 app:
@@ -49,3 +64,29 @@ jwt:
   secret: template
   expire-minutes: 30
   issuer: template
+
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor: DEBUG
+tavily:
+  hub:
+    api-key: thb-8hv2kcv3gkti4jm2b9j98awidyhf
+    base-url: https://tavily.sharyuke.com
+
+ai:
+    # 全局基础 system prompt 文件
+    system-base-properties-location: classpath:prompts/base.txt
+    scenes:
+      love:
+        # 场景补充 system prompt 文件
+        system-prompt-location: classpath:prompts/love.st
+        user-template: |
+          用户状态：{status}
+          用户问题：{question}
+          请给出专属建议。
+      interview:
+        system-prompt-location: classpath:prompts/interview.st
+        user-template: |
+          应聘岗位：{position}
+          用户回答：{answer}
+          请继续提问。

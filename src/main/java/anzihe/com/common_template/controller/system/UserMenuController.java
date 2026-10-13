@@ -10,7 +10,7 @@ import anzihe.com.common_template.service.SysUserMenuService;
 import cn.hutool.core.bean.BeanUtil;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 @RestController
 @RequestMapping("/user_menu")

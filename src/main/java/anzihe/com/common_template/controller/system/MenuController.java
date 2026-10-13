@@ -9,7 +9,7 @@ import anzihe.com.common_template.model.VO.menu.SysMenuVO;
 import anzihe.com.common_template.service.SysMenuService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 
 /**

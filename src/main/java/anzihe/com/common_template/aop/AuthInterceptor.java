@@ -7,6 +7,8 @@ import anzihe.com.common_template.model.VO.user.UserVO;
 import anzihe.com.common_template.model.enums.UserRoleEnum;
 import anzihe.com.common_template.service.UserService;
 import anzihe.com.common_template.utils.TokenUtil;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,9 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 @Aspect
 @Component
