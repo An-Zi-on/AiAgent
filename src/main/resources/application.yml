@@ -77,16 +77,14 @@ ai:
     # 全局基础 system prompt 文件
     system-base-properties-location: classpath:prompts/base.txt
     scenes:
-      love:
+      knowledge:
         # 场景补充 system prompt 文件
         system-prompt-location: classpath:prompts/love.st
         user-template: |
-          用户状态：{status}
           用户问题：{question}
-          请给出专属建议。
+          请简洁回答。
       interview:
         system-prompt-location: classpath:prompts/interview.st
         user-template: |
-          应聘岗位：{position}
           用户回答：{answer}
           请继续提问。

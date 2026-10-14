@@ -20,5 +20,4 @@ public class ChatMemoryConfig {
                 .chatMemoryRepository(jdbcChatMemoryRepository)
                 .build();
     }
-
 }

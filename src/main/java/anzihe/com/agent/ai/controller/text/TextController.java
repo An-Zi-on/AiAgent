@@ -16,4 +16,9 @@ public class TextController {
         return app.doChat(message, "1234");
     }
 
+
+    @GetMapping("/status")
+    public String scene(@RequestParam("question") String question) {
+        return app.doScene("123456", question);
+    }
 }

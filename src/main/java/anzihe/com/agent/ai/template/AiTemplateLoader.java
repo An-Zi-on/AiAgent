@@ -1,4 +1,4 @@
-package anzihe.com.agent.ai.loader;
+package anzihe.com.agent.ai.template;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +31,7 @@ public class AiTemplateLoader {
         }
         try {
             //读取内容并返回
+            log.info("成功读取资源路径为{}", location);
             return resource.getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
