@@ -10,10 +10,11 @@ spring:
           jdbc:
             initialize-schema: always
     openai:
-      base-url: https://api.deepseek.com
-      api-key: sk-8b6964d58d9a4d319f840084dafc1fff
+      base-url: https://open.bigmodel.cn/api/paas/v4/
+      api-key: 3e5b5d669703414bbd77ba389de3ecbf.KkInQfRXa5WTafyJ
       chat:
-        model: deepseek-chat
+       options:
+         model: glm-5.3
 
 
   jackson:
@@ -83,8 +84,16 @@ ai:
         user-template: |
           用户问题：{question}
           请简洁回答。
+        result-format: |
+          Your response should be in JSON format.
+          Do not include any explanations, only provide a RFC8259 compliant JSON response following this format without deviation.
+          Do not include markdown code blocks in your response.
+          Remove the ```json markdown from the output.
+            Here is the JSON Schema instance your output must adhere to:
+          ```{format}```;
       interview:
         system-prompt-location: classpath:prompts/interview.st
         user-template: |
           用户回答：{answer}
           请继续提问。
+       

@@ -6,5 +6,8 @@ public record Scenes(
         //场景提示词
         String systemPromote,
         //用户提示词模版
-        String promptTemplate) {
+        String promptTemplate,
+        //
+        String resultFormat
+) {
 }

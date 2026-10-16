@@ -31,5 +31,8 @@ public class AiTemplateProperties {
          * 用户提示词模版
          */
         private  String userTemplate;
+
+
+        private String resultFormat;
     }
 }

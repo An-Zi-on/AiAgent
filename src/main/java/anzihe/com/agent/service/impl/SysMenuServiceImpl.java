@@ -21,16 +21,17 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+
 import java.util.*;
 
 /**
-* @author qq529
-* @description 针对表【sys_menu(菜单权限表)】的数据库操作Service实现
-* @createDate 2026-09-22 11:06:39
-*/
+ * @author qq529
+ * @description 针对表【sys_menu(菜单权限表)】的数据库操作Service实现
+ * @createDate 2026-09-22 11:06:39
+ */
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
-    implements SysMenuService{
+        implements SysMenuService {
 
     @Resource
     private SysUserMenuService userMenuService;
@@ -47,22 +48,22 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         bean.setCreateTime(new Date());
         bean.setUpdateTime(new Date());
         boolean save = this.save(bean);
-        if (!save){
-            throw  new BusinessException(ErrorCode.SYSTEM_ERROR);
+        if (!save) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
     }
 
     @Override
     public void update(SysMenuDTO dto) {
         SysMenu exist = this.getById(dto.getId());
-        if (BeanUtil.isEmpty(exist)){
-            throw  new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        if (BeanUtil.isEmpty(exist)) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         SysMenu bean = BeanUtil.toBean(dto, SysMenu.class);
         bean.setUpdateTime(new Date());
         boolean b = this.updateById(bean);
-        if (!b){
-            throw  new BusinessException(ErrorCode.SYSTEM_ERROR);
+        if (!b) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
     }
 
@@ -73,18 +74,18 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         boolean b = this.removeById(exist);
-        if (!b){
-            throw  new BusinessException(ErrorCode.SYSTEM_ERROR);
+        if (!b) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
     }
 
     @Override
     public SysMenuVO getDetailById(Long id) {
-        if (id == null){
-            throw  new BusinessException(ErrorCode.PARAMS_ERROR);
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         SysMenu exist = this.getById(id);
-        if (BeanUtil.isEmpty(exist)){
+        if (BeanUtil.isEmpty(exist)) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         return BeanUtil.toBean(exist, SysMenuVO.class);
@@ -95,14 +96,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         // 1. 查询所有菜单
         List<SysMenu> list = this.list(
                 new LambdaQueryWrapper<SysMenu>()
-                    .orderByAsc(SysMenu::getRank));
+                        .orderByAsc(SysMenu::getRank));
         return getSysMenuTreeVOS(list);
     }
 
     private List<SysMenuTreeVO> findSubMenuTree(SysMenuTreeVO menuTreeVO, List<SysMenu> list) {
         List<SysMenuTreeVO> menuTreeVOList = new ArrayList<>();
-        for (SysMenu item : list){
-            if (item.getParentId().equals(menuTreeVO.getId())){
+        for (SysMenu item : list) {
+            if (item.getParentId().equals(menuTreeVO.getId())) {
                 SysMenuTreeVO itemChildTreeVO = BeanUtil.toBean(item, SysMenuTreeVO.class);
                 menuTreeVOList.add(itemChildTreeVO);
                 itemChildTreeVO.setChildren(findSubMenuTree(itemChildTreeVO, list));
@@ -134,9 +135,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     @NotNull
     private List<SysMenuTreeVO> getSysMenuTreeVOS(List<SysMenu> list) {
         List<SysMenuTreeVO> menuTreeVOList = new ArrayList<>();
-        list.forEach(item  ->{
+        list.forEach(item -> {
             //查找顶级菜单
-            if (item.getParentId() == 0){
+            if (item.getParentId() == 0) {
                 SysMenuTreeVO menuTreeVO = BeanUtil.toBean(item, SysMenuTreeVO.class);
                 //寻找对应的子菜单
                 List<SysMenuTreeVO> subMenuTree = findSubMenuTree(menuTreeVO, list);

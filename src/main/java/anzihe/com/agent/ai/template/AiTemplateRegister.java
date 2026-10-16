@@ -24,7 +24,8 @@ public class AiTemplateRegister {
             String systemPromote = loader.load(item.getSystemPromptLocation());
             //用户提示词模版
             String userTemplate = item.getUserTemplate();
-            Scenes scenes = new Scenes(name, systemPromote, userTemplate);
+            String resultFormat = item.getResultFormat();
+            Scenes scenes = new Scenes(name, systemPromote, userTemplate,resultFormat);
             currentAllScenes.put(name, scenes);
         });
     }

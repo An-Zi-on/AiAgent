@@ -16,6 +16,14 @@ public class PromoteTemplateRenderer {
         return render(template,var);
     }
 
+    public  String resultFormat(String template, Map<String,Object> var ){
+        return PromptTemplate
+                .builder()
+                .template(template)  //"用户问题：{question}"
+                .build()
+                .render(var == null?Map.of():var); //{question: "你好你好......."}
+    }
+
     private  String render(String template , Map<String,Object> var){
         if (StrUtil.isBlank(template)){
             return "";

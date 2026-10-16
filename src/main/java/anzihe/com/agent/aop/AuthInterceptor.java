@@ -21,8 +21,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class AuthInterceptor {
 
-    @Resource
-    private UserService userService;
 
     @Around("@annotation(authCheck)")
     public  Object doInterceptor(ProceedingJoinPoint joinPoint, AuthCheck authCheck) throws Throwable {
