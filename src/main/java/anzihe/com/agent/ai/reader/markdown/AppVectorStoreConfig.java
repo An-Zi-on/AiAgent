@@ -1,8 +1,8 @@
 package anzihe.com.agent.ai.reader.markdown;
 
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
-import org.springframework.ai.zhipuai.ZhiPuAiEmbeddingModel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,7 +16,7 @@ public class AppVectorStoreConfig {
     }
 
     @Bean
-    public SimpleVectorStore store(ZhiPuAiEmbeddingModel embeddingModel){
+    public SimpleVectorStore store(EmbeddingModel embeddingModel){
         SimpleVectorStore vectorStore = SimpleVectorStore.builder(embeddingModel).build();
         List<Document> documents = markdownReader.loadedDocument();
         vectorStore.add(documents);
