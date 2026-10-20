@@ -26,7 +26,6 @@ import java.util.Map;
 public class AiChatService {
     private final ChatModel chatModel;
     private final AiTemplateRegister templateRegister;
-    private final PromoteTemplateRenderer templateRenderer;
     private final AiTemplateProperties templateProperties;
     private final AiTemplateLoader promptLoader;
     private final ChatMemory chatMemory;
@@ -42,7 +41,6 @@ public class AiChatService {
         this.templateProperties = templateProperties;
         this.templateRegister = templateRegister;
         this.promptLoader = promptLoader;
-        this.templateRenderer = templateRenderer;
         this.chatMemory = chatMemory;
     }
 
@@ -57,114 +55,119 @@ public class AiChatService {
                 .content();
     }
 
-    public String doScene(String scene, Map<String, Object> var, String conversationId) {
-        Scenes scenes = templateRegister.get(scene);
-        String resultFormat = scenes.resultFormat();
-        BeanOutputConverter<MovieInfo> converter = new BeanOutputConverter<>(MovieInfo.class);
-        String format = converter.getFormat();
-        //用户提示词渲染
-        String userPromo = templateRenderer
-                .userPrompt(scenes.promptTemplate(), var);
-        String formatString = templateRenderer.resultFormat(resultFormat, Map.of("format", format));
-        String userContent = userPromo + "\n\n---\n\n" + formatString;
-
-        ChatClient.CallResponseSpec call = chunk(scenes)
-                .prompt()
-                .user(userContent)
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .call();
-        ChatResponse chatResponse = call.chatResponse();
-        String text = chatResponse.getResult().getOutput().getText();
-        log.error(text);
-        converter.convert(text);
-        return call.content();
-    }
-
-
-    private ChatClient chunk(Scenes scenes) {
-        //加载系统基础提示词
-        String base = promptLoader.load(templateProperties.getSystemBasePropertiesLocation());
-        log.info("加载系统基础提示词文件路径为{}", templateProperties.getSystemBasePropertiesLocation());
-        //补充场景提示词
-        String scenePrompt = scenes.systemPromote();
-        log.info("加载场景提示词");
-        String finalSystem = (base == null ? "" : base)
-                + "\n\n"
-                + (scenePrompt == null ? "" : scenePrompt);
-
-        return ChatClient
-                .builder(chatModel)
-                .defaultSystem(finalSystem)
-                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build(),
-                        new MyLoggerAdvisor(),
-                        new org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor())
-                .build();
-    }
 
     /**
-     * 使用结构化输出  entity() 方法
-     *
-     * @param message
-     * @param conversationId
-     * @return
+     * Rag 功能
      */
-    public MovieInfo chatMovie(String message, String conversationId) {
-        return ChatClient.builder(chatModel)
-                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .build()
-                .prompt().user(message)
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .call()
-                .entity(MovieInfo.class, ChatClient.EntityParamSpec::useProviderStructuredOutput);
-    }
-
-    /**
-     * 结构化输出泛型对象使用entity()方法
-     *
-     * @param message
-     * @param conversationId
-     * @return
-     */
-    public List<MovieInfo> chatMovies(String message, String conversationId) {
-        return ChatClient.builder(chatModel)
-                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .build()
-                .prompt().user(message)
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .call()
-                .entity(new ParameterizedTypeReference<>() {
-                });
-    }
-
-    /**
-     *
-     * @param message
-     * @param conversationId
-     * @return
-     */
-    public ResponseEntity<ChatResponse, MovieInfo> chatGetRespond(String message, String conversationId) {
-        return ChatClient.builder(chatModel)
-                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .build()
-                .prompt().user(message)
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .call()
-                .responseEntity(MovieInfo.class);
-    }
-
-    /**
-     *
-     * @param message
-     * @param conversationId
-     * @return
-     */
-    public ResponseEntity<ChatResponse, MovieInfo> chatGetRespond1(String message, String conversationId) {
-        return ChatClient.builder(chatModel)
-                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .build()
-                .prompt().user(message)
-                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .call()
-                .responseEntity(new BeanOutputConverter<>(MovieInfo.class));
-    }
+//
+//    public String doScene(String scene, Map<String, Object> var, String conversationId) {
+//        Scenes scenes = templateRegister.get(scene);
+//        String resultFormat = scenes.resultFormat();
+//        BeanOutputConverter<MovieInfo> converter = new BeanOutputConverter<>(MovieInfo.class);
+//        String format = converter.getFormat();
+//        //用户提示词渲染
+//        String userPromo = templateRenderer
+//                .userPrompt(scenes.promptTemplate(), var);
+//        String formatString = templateRenderer.resultFormat(resultFormat, Map.of("format", format));
+//        String userContent = userPromo + "\n\n---\n\n" + formatString;
+//
+//        ChatClient.CallResponseSpec call = chunk(scenes)
+//                .prompt()
+//                .user(userContent)
+//                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+//                .call();
+//        ChatResponse chatResponse = call.chatResponse();
+//        String text = chatResponse.getResult().getOutput().getText();
+//        log.error(text);
+//        converter.convert(text);
+//        return call.content();
+//    }
+//
+//
+//    private ChatClient chunk(Scenes scenes) {
+//        //加载系统基础提示词
+//        String base = promptLoader.load(templateProperties.getSystemBasePropertiesLocation());
+//        log.info("加载系统基础提示词文件路径为{}", templateProperties.getSystemBasePropertiesLocation());
+//        //补充场景提示词
+//        String scenePrompt = scenes.systemPromote();
+//        log.info("加载场景提示词");
+//        String finalSystem = (base == null ? "" : base)
+//                + "\n\n"
+//                + (scenePrompt == null ? "" : scenePrompt);
+//
+//        return ChatClient
+//                .builder(chatModel)
+//                .defaultSystem(finalSystem)
+//                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build(),
+//                        new MyLoggerAdvisor(),
+//                        new org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor())
+//                .build();
+//    }
+//
+//    /**
+//     * 使用结构化输出  entity() 方法
+//     *
+//     * @param message
+//     * @param conversationId
+//     * @return
+//     */
+//    public MovieInfo chatMovie(String message, String conversationId) {
+//        return ChatClient.builder(chatModel)
+//                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+//                .build()
+//                .prompt().user(message)
+//                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+//                .call()
+//                .entity(MovieInfo.class, ChatClient.EntityParamSpec::useProviderStructuredOutput);
+//    }
+//
+//    /**
+//     * 结构化输出泛型对象使用entity()方法
+//     *
+//     * @param message
+//     * @param conversationId
+//     * @return
+//     */
+//    public List<MovieInfo> chatMovies(String message, String conversationId) {
+//        return ChatClient.builder(chatModel)
+//                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+//                .build()
+//                .prompt().user(message)
+//                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+//                .call()
+//                .entity(new ParameterizedTypeReference<>() {
+//                });
+//    }
+//
+//    /**
+//     *
+//     * @param message
+//     * @param conversationId
+//     * @return
+//     */
+//    public ResponseEntity<ChatResponse, MovieInfo> chatGetRespond(String message, String conversationId) {
+//        return ChatClient.builder(chatModel)
+//                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+//                .build()
+//                .prompt().user(message)
+//                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+//                .call()
+//                .responseEntity(MovieInfo.class);
+//    }
+//
+//    /**
+//     *
+//     * @param message
+//     * @param conversationId
+//     * @return
+//     */
+//    public ResponseEntity<ChatResponse, MovieInfo> chatGetRespond1(String message, String conversationId) {
+//        return ChatClient.builder(chatModel)
+//                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+//                .build()
+//                .prompt().user(message)
+//                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+//                .call()
+//                .responseEntity(new BeanOutputConverter<>(MovieInfo.class));
+//    }
 }
