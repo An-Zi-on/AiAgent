@@ -15,7 +15,6 @@ public enum ErrorCode {
     OPERATION_ERROR(50001, "操作失败");
 
     private final int code;
-
     private final String message;
 
     ErrorCode(int code, String message) {

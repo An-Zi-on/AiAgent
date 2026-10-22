@@ -12,6 +12,13 @@ spring:
     openai:
       base-url: https://open.bigmodel.cn/api/paas/v4/
       api-key: 3e5b5d669703414bbd77ba389de3ecbf.KkInQfRXa5WTafyJ
+      embedding:
+        base-url: https://llm-q2pt61b6n06w3dlp.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+        api-key: sk-ws-H.PXMYPMX.LyVQ.MEYCIQCLs7mGgH2FWV-SDEbRHQc6xCHJCQQhzY0uptb2a9GhyAIhANHM4LZX0aLVmzQ1QnOFECjfbuQDPH36kZt3Q8n5B8ZR
+        model: qwen3.7-text-embedding
+      chat:
+        model: glm-5.3-flashx
+
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -49,13 +56,17 @@ springdoc:
   swagger-ui:
     enabled: true
   packages-to-scan:
-    - anzihe.com.common_template.controller
+    - anzihe.com.agent
 
 # 本地头像上传目录（相对运行目录）
 app:
   upload:
     dir: uploads
     max-size-mb: 2
+  rag:
+    index-on-startup: true
+    store-dir: embedding
+    enrich-keywords: false
 
 jwt:
   secret: template

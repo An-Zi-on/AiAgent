@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### RAG 向量库（本地生成，不入库）###
+embedding/
