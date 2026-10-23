@@ -3,17 +3,13 @@ package anzihe.com.agent.ai.reader.markdown;
 import anzihe.com.agent.utils.FileUtils;
 import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.BatchingStrategy;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.model.transformer.KeywordMetadataEnricher;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Configuration
@@ -25,10 +21,16 @@ public class AppVectorStoreConfig {
         this.markdownReader = markdownReader;
     }
 
+    /**
+     * 本地向量存储初始化
+     * @param embeddingModel 向量大模型
+     * @param batchingStrategy 批量存储策略
+     * @return
+     */
     @Bean
     public SimpleVectorStore store(EmbeddingModel embeddingModel,
-                                   BatchingStrategy batchingStrategy,
-                                   KeywordMetadataEnricher enricher) {
+                                   BatchingStrategy batchingStrategy
+                                 ) {
         SimpleVectorStore vectorStore = SimpleVectorStore.builder(embeddingModel)
                 .batchingStrategy(batchingStrategy).build();
         String currentBasePath = FileUtils.getCurrentBasePath();

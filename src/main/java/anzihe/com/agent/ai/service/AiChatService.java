@@ -17,6 +17,8 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.converter.BeanOutputConverter;
+import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
+import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -53,6 +55,10 @@ public class AiChatService {
     }
 
     public String chat(String message, String conversationId) {
+        RetrievalAugmentationAdvisor ragAdvisor = RetrievalAugmentationAdvisor.builder()
+                .documentRetriever(VectorStoreDocumentRetriever.builder()
+                        .vectorStore(vectorStore).build())
+                .build();
         return ChatClient.builder(chatModel).build()
                 .prompt().user(message)
                 //提供一个默认顾问在 对话时找到时机 使用和存储对话
@@ -60,7 +66,7 @@ public class AiChatService {
                 //a.param(ChatMemory.CONVERSATION_ID, conversationId) 则是对哪一组会话进行操作
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
                 //开启RAG功能
-                .advisors(QuestionAnswerAdvisor.builder(this.vectorStore).build())
+                .advisors(QuestionAnswerAdvisor.builder(this.vectorStore).build(),ragAdvisor)
                 .call()
                 .content();
     }

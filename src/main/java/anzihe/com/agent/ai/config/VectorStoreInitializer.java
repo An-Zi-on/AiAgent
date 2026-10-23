@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.List;
 
+/**
+ * 本地向量存储初始化
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
