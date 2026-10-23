@@ -63,11 +63,6 @@ app:
   upload:
     dir: uploads
     max-size-mb: 2
-  rag:
-    index-on-startup: true
-    store-dir: embedding
-    enrich-keywords: false
-
 jwt:
   secret: template
   expire-minutes: 30
