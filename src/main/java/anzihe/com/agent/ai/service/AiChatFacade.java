@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 @Component
 @Slf4j
@@ -26,6 +27,11 @@ public class AiChatFacade {
     public  String doChat(String message, HttpServletRequest request) {
         UserVO userVO = userService.currentUser(request);
         return aiChatService.chat(message, String.valueOf(userVO.getId()));
+    }
+
+    public Flux<String> doChatStream(String message,HttpServletRequest request){
+        UserVO userVO = userService.currentUser(request);
+        return aiChatService.chatStream(message,String.valueOf(userVO.getId()));
     }
 
 //    public String doScene(String conversionId, String question) {

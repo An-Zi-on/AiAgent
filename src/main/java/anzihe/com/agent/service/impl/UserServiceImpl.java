@@ -16,13 +16,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -36,13 +37,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private UserMapper userMapper;
 
+    /**
+     * 允许前端排序的字段白名单：key 为前端字段名，value 为实体字段。
+     * 不在白名单内的字段一律使用默认排序，避免直接拼接前端字符串造成非法列名或注入风险。
+     */
+    private static final Map<String, SFunction<User, ?>> SORT_COLUMNS = Map.of(
+            "id", User::getId,
+            "userAccount", User::getUserAccount,
+            "userName", User::getUserName,
+            "userRole", User::getUserRole,
+            "createTime", User::getCreateTime,
+            "updateTime", User::getUpdateTime
+    );
+
     @Override
     public void register(String userAccount, String password, String checkPassword) {
         ThrowUtils.throwException(userAccount.length() < 8, ErrorCode.PARAMS_ERROR, "账号长度大于8位");
         ThrowUtils.throwException(password.length() < 8 || checkPassword.length() < 8, ErrorCode.PARAMS_ERROR, "密码长度大于8位");
         ThrowUtils.throwException(!password.equals(checkPassword), ErrorCode.PARAMS_ERROR, "输入密码不一致");
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserAccount,userAccount);
         long count = this.count(queryWrapper);
         ThrowUtils.throwException(count > 0, ErrorCode.PARAMS_ERROR, "账号已存在");
         String encryptPassword = getEncryptPassword(password);
@@ -58,8 +72,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public String userLogin(String userAccount, String password, HttpServletRequest request) {
         ThrowUtils.throwException(userAccount.length() < 8 || StrUtil.isEmptyIfStr(userAccount), ErrorCode.PARAMS_ERROR);
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_account", userAccount);
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserAccount, userAccount);
         User selectUser = userMapper.selectOne(queryWrapper);
         ThrowUtils.throwException(selectUser == null, ErrorCode.PARAMS_ERROR, "用户不存在");
         String userPassword = selectUser.getUserPassword();
@@ -131,7 +145,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public QueryWrapper<User> getUserQueryWrapper(UserQueryRequest queryRequest) {
+    public  LambdaQueryWrapper<User> getUserQueryWrapper(UserQueryRequest queryRequest) {
         ThrowUtils.throwException(queryRequest == null, ErrorCode.OPERATION_ERROR, "查询条件为空");
         Long id = queryRequest.getId();
         String userName = queryRequest.getUserName();
@@ -140,13 +154,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String userRole = queryRequest.getUserRole();
         String sortField = queryRequest.getSortField();
         String sortOrder = queryRequest.getSortOrder();
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Objects.nonNull(id), "id", id);
-        queryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
-        queryWrapper.like(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
-        queryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
-        queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
-        queryWrapper.orderBy(StringUtils.isNotBlank(sortField), sortOrder.equals("ascend"), sortField);
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Objects.nonNull(id), User::getId, id);
+        queryWrapper.eq(StrUtil.isNotBlank(userRole), User::getUserRole, userRole);
+        queryWrapper.like(StrUtil.isNotBlank(userAccount), User::getUserAccount, userAccount);
+        queryWrapper.like(StrUtil.isNotBlank(userName), User::getUserName, userName);
+        queryWrapper.like(StrUtil.isNotBlank(userProfile), User::getUserProfile, userProfile);
+        SFunction<User, ?> sortColumn = StrUtil.isBlank(sortField) ? null : SORT_COLUMNS.get(sortField);
+        if (sortColumn == null) {
+            queryWrapper.orderByDesc(User::getCreateTime);
+        } else {
+            queryWrapper.orderBy(true, "ascend".equals(sortOrder), sortColumn);
+        }
         return queryWrapper;
     }
 

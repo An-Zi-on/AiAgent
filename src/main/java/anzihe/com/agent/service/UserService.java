@@ -4,6 +4,7 @@ import anzihe.com.agent.model.DTO.user.UserQueryRequest;
 import anzihe.com.agent.model.VO.user.LoginUserVO;
 import anzihe.com.agent.model.VO.user.UserVO;
 import anzihe.com.agent.model.entity.User;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import com.baomidou.mybatisplus.spring.service.IService;
@@ -28,7 +29,7 @@ public interface UserService extends IService<User> {
 
     List<UserVO> toListUserVO(List<User> userList);
 
-    QueryWrapper<User> getUserQueryWrapper(UserQueryRequest queryRequest);
+    LambdaQueryWrapper<User> getUserQueryWrapper(UserQueryRequest queryRequest);
 
     boolean isAdmin(LoginUserVO userVO);
 }

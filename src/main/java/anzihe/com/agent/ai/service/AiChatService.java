@@ -7,6 +7,7 @@ import anzihe.com.agent.ai.template.AiTemplateRegister;
 import anzihe.com.agent.ai.template.PromptTemplateRenderer;
 import anzihe.com.agent.ai.tools.FetchUrlTools;
 import anzihe.com.agent.utils.TimeUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -18,6 +19,7 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 @Service
@@ -28,11 +30,24 @@ public class AiChatService {
     private final AiTemplateLoader promptLoader;
     private final ChatMemory chatMemory;
     private  final VectorStore vectorStore;
+    private final ChatClient chatClient  ;
     @Autowired
     private ToolRegistrationConfig toolRegistration;
 
     @Autowired
     private FetchUrlTools fetchUrlTools;
+
+    /**
+     * 初始化依赖
+     * 配置默认的ChatClient  tools advisor system提示词
+     * @param chatModel
+     * @param templateProperties
+     * @param templateRegister
+     * @param promptLoader
+     * @param templateRenderer
+     * @param chatMemory
+     * @param vectorStore
+     */
     public AiChatService(
             @Qualifier("openAiChatModel") ChatModel chatModel,
             AiTemplateProperties templateProperties,
@@ -47,6 +62,12 @@ public class AiChatService {
         this.promptLoader = promptLoader;
         this.chatMemory = chatMemory;
         this.vectorStore =vectorStore;
+        this.chatClient = ChatClient
+                .builder(this.chatModel)
+                .defaultSystem(String.format("Current time is %s", TimeUtils.getCurrentTime()))
+                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+                .defaultTools(toolRegistration.callbacks())
+                .build();
     }
 
     public String chat(String message, String conversationId) {
@@ -54,22 +75,30 @@ public class AiChatService {
 //                .documentRetriever(VectorStoreDocumentRetriever.builder()
 //                        .vectorStore(vectorStore).build())
 //                .build();
-        return ChatClient.builder(chatModel).build()
+        return this.chatClient
                 .prompt()
-                .system(String.format("Current time is %s", TimeUtils.getCurrentTime()))
                 .user(message)
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+                .advisors()
                 //提供一个默认顾问在 对话时找到时机 使用和存储对话
                 // ChatMemory 只提供实现的方式,具体执行的时机由这个MessageChatMemoryAdvisors 进行操作
                 //a.param(ChatMemory.CONVERSATION_ID, conversationId) 则是对哪一组会话进行操作
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .tools(toolRegistration.callbacks())
+                .tools()
                 //开启RAG功能
 //                .advisors(QuestionAnswerAdvisor.builder(this.vectorStore).build(),ragAdvisor)
                 .call()
                 .content();
     }
-
+    public Flux<String> chatStream(String message, String conversationId) {
+        return this.chatClient
+                .prompt()
+                .user(message)
+                .advisors()
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .tools()
+                .stream()
+                .content();
+    }
 
     /**
      * Rag 功能

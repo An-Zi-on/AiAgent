@@ -72,12 +72,6 @@
             <artifactId>jsoup</artifactId>
             <version>1.23.2</version>
         </dependency>
-
-        <!-- 向量存储 -->
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-vector-store-advisor</artifactId>
-        </dependency>
         <!-- markdown 文本读取器 -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
@@ -96,6 +90,7 @@
             <artifactId>spring-ai-rag</artifactId>
         </dependency>
 
+        <!-- 向量存储 -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-vector-store-advisor</artifactId>
