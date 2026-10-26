@@ -1,7 +1,9 @@
 package anzihe.com.agent.ai.controller;
 
 import anzihe.com.agent.ai.service.AiChatFacade;
+import anzihe.com.agent.service.UserService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AiController {
     @Resource
     private AiChatFacade aiChatFacade;
+    @Resource
+    private UserService userService;
 
     @GetMapping("/questsion")
-    public String talk(@RequestParam("message") String message){
-        return aiChatFacade.doChat(message, "4564554");
+    public String talk(@RequestParam("message" ) String message,HttpServletRequest request){
+        return aiChatFacade.doChat(message,request);
     }
 }

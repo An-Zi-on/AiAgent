@@ -2,30 +2,30 @@ package anzihe.com.agent.ai.service;
 
 import anzihe.com.agent.ai.model.MovieInfo;
 import anzihe.com.agent.ai.model.MovieInfoEntityResult;
+import anzihe.com.agent.model.VO.user.UserVO;
+import anzihe.com.agent.service.UserService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ResponseEntity;
-import org.springframework.ai.chat.metadata.ChatResponseMetadata;
-import org.springframework.ai.chat.metadata.Usage;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.converter.BeanOutputConverter;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class AiChatFacade {
     private  final AiChatService aiChatService;
 
+    @Resource
+    private UserService userService;
     public  AiChatFacade(AiChatService aiChatService){
 
         this.aiChatService = aiChatService;
 
     }
 
-    public  String doChat(String message,String userId) {
-        return aiChatService.chat(message, userId);
+    public  String doChat(String message, HttpServletRequest request) {
+        UserVO userVO = userService.currentUser(request);
+        return aiChatService.chat(message, String.valueOf(userVO.getId()));
     }
 
 //    public String doScene(String conversionId, String question) {

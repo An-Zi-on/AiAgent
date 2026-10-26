@@ -1,36 +1,23 @@
 package anzihe.com.agent.ai.service;
 
-import ai.z.openapi.service.model.WebSearch;
-import anzihe.com.agent.ai.advisor.MyLoggerAdvisor;
 import anzihe.com.agent.ai.config.AiTemplateProperties;
 import anzihe.com.agent.ai.config.ToolRegistrationConfig;
-import anzihe.com.agent.ai.model.MovieInfo;
 import anzihe.com.agent.ai.template.AiTemplateLoader;
 import anzihe.com.agent.ai.template.AiTemplateRegister;
 import anzihe.com.agent.ai.template.PromptTemplateRenderer;
-import anzihe.com.agent.ai.template.Scenes;
 import anzihe.com.agent.ai.tools.FetchUrlTools;
-import anzihe.com.agent.ai.tools.WebSearchTools;
+import anzihe.com.agent.utils.TimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.ResponseEntity;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
-import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -42,10 +29,7 @@ public class AiChatService {
     private final ChatMemory chatMemory;
     private  final VectorStore vectorStore;
     @Autowired
-    private  ToolRegistrationConfig toolRegistration;
-
-    @Autowired
-    private WebSearchTools webSearchTools;
+    private ToolRegistrationConfig toolRegistration;
 
     @Autowired
     private FetchUrlTools fetchUrlTools;
@@ -66,12 +50,15 @@ public class AiChatService {
     }
 
     public String chat(String message, String conversationId) {
-        RetrievalAugmentationAdvisor ragAdvisor = RetrievalAugmentationAdvisor.builder()
-                .documentRetriever(VectorStoreDocumentRetriever.builder()
-                        .vectorStore(vectorStore).build())
-                .build();
+//        RetrievalAugmentationAdvisor ragAdvisor = RetrievalAugmentationAdvisor.builder()
+//                .documentRetriever(VectorStoreDocumentRetriever.builder()
+//                        .vectorStore(vectorStore).build())
+//                .build();
         return ChatClient.builder(chatModel).build()
-                .prompt().user(message)
+                .prompt()
+                .system(String.format("Current time is %s", TimeUtils.getCurrentTime()))
+                .user(message)
+                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 //提供一个默认顾问在 对话时找到时机 使用和存储对话
                 // ChatMemory 只提供实现的方式,具体执行的时机由这个MessageChatMemoryAdvisors 进行操作
                 //a.param(ChatMemory.CONVERSATION_ID, conversationId) 则是对哪一组会话进行操作
@@ -117,7 +104,7 @@ public class AiChatService {
 //        String base = promptLoader.load(templateProperties.getSystemBasePropertiesLocation());
 //        log.info("加载系统基础提示词文件路径为{}", templateProperties.getSystemBasePropertiesLocation());
 //        //补充场景提示词
-//        String scenePrompt = scenes.systemPrompt();
+//        String scenePrompt = scenes.systemPromote();
 //        log.info("加载场景提示词");
 //        String finalSystem = (base == null ? "" : base)
 //                + "\n\n"

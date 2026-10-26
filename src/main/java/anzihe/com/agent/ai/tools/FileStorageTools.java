@@ -8,6 +8,9 @@ import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+
+import static anzihe.com.agent.model.constant.FileConstant.FILE_MAX_SIZE;
 
 /**
  * 文件读取 写入工具
@@ -41,7 +44,13 @@ public class FileStorageTools {
             String fileName,
             @ToolParam(required = true, description = "The text content to write into the file")
             String content) {
-
+        byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
+        if (bytes.length>FILE_MAX_SIZE){
+            return "File content too large: " + bytes.length + " bytes, max allowed is " + FILE_MAX_SIZE;
+        }
+        if (fileName.length()>255){
+            return "File name too long: " + bytes.length + " bytes, max allowed is 255";
+        }
         String filePath = buildPath(fileName);
         File parent = new File(filePath).getParentFile();
         if (parent != null && !parent.exists()) {
@@ -51,11 +60,11 @@ public class FileStorageTools {
         return "File created: " + fileName;
     }
 
+
     /** 统一拼路径 + 防止路径穿越 */
     private String buildPath(String relativeName) {
         File base = new File(FileConstant.FILE_PATH);
         File target = new File(base, relativeName);
-        // 规范化后必须仍在 base 目录下，防止 ../../etc/passwd 这类穿越
         try {
             String basePath = base.getCanonicalPath();
             String targetPath = target.getCanonicalPath();

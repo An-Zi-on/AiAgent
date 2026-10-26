@@ -99,3 +99,6 @@ ai:
           用户回答：{answer}
           请继续提问。
        
+an:
+    search:
+      api-key: MxFUqfEBFHhG4DhtD6XbcYS5
