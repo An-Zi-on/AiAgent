@@ -10,7 +10,7 @@ import java.util.Map;
  * 渲染模版
  */
 @Component
-public class PromoteTemplateRenderer {
+public class PromptTemplateRenderer {
     //返回渲染好的SpringAi提示词模版
     public  String userPrompt(String template, Map<String,Object> var){
         return render(template,var);

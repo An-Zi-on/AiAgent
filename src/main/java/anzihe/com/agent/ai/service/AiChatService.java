@@ -3,11 +3,12 @@ package anzihe.com.agent.ai.service;
 import ai.z.openapi.service.model.WebSearch;
 import anzihe.com.agent.ai.advisor.MyLoggerAdvisor;
 import anzihe.com.agent.ai.config.AiTemplateProperties;
-import anzihe.com.agent.ai.entry.template.Scenes;
-import anzihe.com.agent.ai.entry.text.MovieInfo;
+import anzihe.com.agent.ai.config.ToolRegistrationConfig;
+import anzihe.com.agent.ai.model.MovieInfo;
 import anzihe.com.agent.ai.template.AiTemplateLoader;
 import anzihe.com.agent.ai.template.AiTemplateRegister;
-import anzihe.com.agent.ai.template.PromoteTemplateRenderer;
+import anzihe.com.agent.ai.template.PromptTemplateRenderer;
+import anzihe.com.agent.ai.template.Scenes;
 import anzihe.com.agent.ai.tools.FetchUrlTools;
 import anzihe.com.agent.ai.tools.WebSearchTools;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,8 @@ public class AiChatService {
     private final AiTemplateLoader promptLoader;
     private final ChatMemory chatMemory;
     private  final VectorStore vectorStore;
+    @Autowired
+    private  ToolRegistrationConfig toolRegistration;
 
     @Autowired
     private WebSearchTools webSearchTools;
@@ -51,10 +54,9 @@ public class AiChatService {
             AiTemplateProperties templateProperties,
             AiTemplateRegister templateRegister,
             AiTemplateLoader promptLoader,
-            PromoteTemplateRenderer templateRenderer,
+            PromptTemplateRenderer templateRenderer,
             ChatMemory chatMemory,
-            VectorStore vectorStore
-    ) {
+            VectorStore vectorStore) {
         this.chatModel = chatModel;
         this.templateProperties = templateProperties;
         this.templateRegister = templateRegister;
@@ -74,9 +76,9 @@ public class AiChatService {
                 // ChatMemory 只提供实现的方式,具体执行的时机由这个MessageChatMemoryAdvisors 进行操作
                 //a.param(ChatMemory.CONVERSATION_ID, conversationId) 则是对哪一组会话进行操作
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .tools(toolRegistration.callbacks())
                 //开启RAG功能
-                .tools(webSearchTools,fetchUrlTools)
-                .advisors(QuestionAnswerAdvisor.builder(this.vectorStore).build(),ragAdvisor)
+//                .advisors(QuestionAnswerAdvisor.builder(this.vectorStore).build(),ragAdvisor)
                 .call()
                 .content();
     }
@@ -115,7 +117,7 @@ public class AiChatService {
 //        String base = promptLoader.load(templateProperties.getSystemBasePropertiesLocation());
 //        log.info("加载系统基础提示词文件路径为{}", templateProperties.getSystemBasePropertiesLocation());
 //        //补充场景提示词
-//        String scenePrompt = scenes.systemPromote();
+//        String scenePrompt = scenes.systemPrompt();
 //        log.info("加载场景提示词");
 //        String finalSystem = (base == null ? "" : base)
 //                + "\n\n"

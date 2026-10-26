@@ -1,7 +1,6 @@
 package anzihe.com.agent.ai.template;
 
 import anzihe.com.agent.ai.config.AiTemplateProperties;
-import anzihe.com.agent.ai.entry.template.Scenes;
 import anzihe.com.agent.exception.BusinessException;
 import anzihe.com.agent.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +20,11 @@ public class AiTemplateRegister {
     public AiTemplateRegister(AiTemplateProperties properties, AiTemplateLoader loader) {
         properties.scenes.forEach((name, item) -> {
             //场景提示词
-            String systemPromote = loader.load(item.getSystemPromptLocation());
+            String systemPrompt = loader.load(item.getSystemPromptLocation());
             //用户提示词模版
             String userTemplate = item.getUserTemplate();
             String resultFormat = item.getResultFormat();
-            Scenes scenes = new Scenes(name, systemPromote, userTemplate,resultFormat);
+            Scenes scenes = new Scenes(name, systemPrompt, userTemplate,resultFormat);
             currentAllScenes.put(name, scenes);
         });
     }

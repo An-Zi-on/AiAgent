@@ -2,6 +2,7 @@ package anzihe.com.agent.ai.tools;
 
 import anzihe.com.agent.model.constant.FileConstant;
 import cn.hutool.core.io.FileUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.io.File;
 /**
  * 文件读取 写入工具
  */
+@Slf4j
 @Component
 public class FileStorageTools {
 
@@ -63,6 +65,7 @@ public class FileStorageTools {
         } catch (java.io.IOException e) {
             throw new RuntimeException("Failed to resolve file path", e);
         }
+        log.info(target.getAbsolutePath());
         return target.getPath();
     }
 }

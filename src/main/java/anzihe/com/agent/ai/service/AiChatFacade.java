@@ -1,8 +1,7 @@
-package anzihe.com.agent.ai.app;
+package anzihe.com.agent.ai.service;
 
-import anzihe.com.agent.ai.entry.text.MoveInfoEntityResult;
-import anzihe.com.agent.ai.entry.text.MovieInfo;
-import anzihe.com.agent.ai.service.AiChatService;
+import anzihe.com.agent.ai.model.MovieInfo;
+import anzihe.com.agent.ai.model.MovieInfoEntityResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ResponseEntity;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
@@ -16,10 +15,10 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class App {
+public class AiChatFacade {
     private  final AiChatService aiChatService;
 
-    public  App(AiChatService aiChatService){
+    public  AiChatFacade(AiChatService aiChatService){
 
         this.aiChatService = aiChatService;
 
@@ -40,7 +39,7 @@ public class App {
 //        return aiChatService.chatMovies(message, userId);
 //    }
 //
-//    public MoveInfoEntityResult doChatMoviesRespond(String message, String userId) {
+//    public MovieInfoEntityResult doChatMoviesRespond(String message, String userId) {
 //        ResponseEntity<ChatResponse, MovieInfo> responseEntity = aiChatService.chatGetRespond(message, userId);
 //        //包含响应的元素数据
 //        ChatResponseMetadata metadata = responseEntity.getResponse().getMetadata();
@@ -67,6 +66,6 @@ public class App {
 //        log.info("结束原因: {}", finishReason);
 //        log.info("解析结果 MovieInfo: {}", entity);
 //        log.info("原始响应文本: {}", text);
-//        return new MoveInfoEntityResult(totalTokens,promptTokens,completionTokens,completionTokens,responseEntity.getEntity());
+//        return new MovieInfoEntityResult(totalTokens,promptTokens,completionTokens,completionTokens,responseEntity.getEntity());
 //    }2
 }

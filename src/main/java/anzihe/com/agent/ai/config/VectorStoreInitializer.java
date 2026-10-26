@@ -1,6 +1,6 @@
 package anzihe.com.agent.ai.config;
 
-import anzihe.com.agent.ai.reader.markdown.MarkdownDocumentReader;
+import anzihe.com.agent.ai.reader.MarkdownDocumentReader;
 import anzihe.com.agent.utils.FileUtils;
 import cn.hutool.core.io.FileUtil;
 import lombok.RequiredArgsConstructor;

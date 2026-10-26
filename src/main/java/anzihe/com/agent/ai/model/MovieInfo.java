@@ -1,4 +1,4 @@
-package anzihe.com.agent.ai.entry.text;
+package anzihe.com.agent.ai.model;
 
 import java.util.List;
 

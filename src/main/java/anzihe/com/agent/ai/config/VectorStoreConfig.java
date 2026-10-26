@@ -1,5 +1,6 @@
-package anzihe.com.agent.ai.reader.markdown;
+package anzihe.com.agent.ai.config;
 
+import anzihe.com.agent.ai.reader.MarkdownDocumentReader;
 import anzihe.com.agent.utils.FileUtils;
 import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +14,11 @@ import java.io.File;
 
 @Slf4j
 @Configuration
-public class AppVectorStoreConfig {
+public class VectorStoreConfig {
 
     private final MarkdownDocumentReader markdownReader;
 
-    public AppVectorStoreConfig(MarkdownDocumentReader markdownReader) {
+    public VectorStoreConfig(MarkdownDocumentReader markdownReader) {
         this.markdownReader = markdownReader;
     }
 
