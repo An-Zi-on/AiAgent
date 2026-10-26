@@ -66,6 +66,14 @@
 
     <!-- ==================== 依赖 ==================== -->
     <dependencies>
+        <!-- jsoup 联网搜索 -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.23.2</version>
+        </dependency>
+
+        <!-- 向量存储 -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-vector-store-advisor</artifactId>

@@ -1,5 +1,6 @@
 package anzihe.com.agent.ai.service;
 
+import ai.z.openapi.service.model.WebSearch;
 import anzihe.com.agent.ai.advisor.MyLoggerAdvisor;
 import anzihe.com.agent.ai.config.AiTemplateProperties;
 import anzihe.com.agent.ai.entry.template.Scenes;
@@ -7,6 +8,8 @@ import anzihe.com.agent.ai.entry.text.MovieInfo;
 import anzihe.com.agent.ai.template.AiTemplateLoader;
 import anzihe.com.agent.ai.template.AiTemplateRegister;
 import anzihe.com.agent.ai.template.PromoteTemplateRenderer;
+import anzihe.com.agent.ai.tools.FetchUrlTools;
+import anzihe.com.agent.ai.tools.WebSearchTools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ResponseEntity;
@@ -20,6 +23,7 @@ import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -37,6 +41,11 @@ public class AiChatService {
     private final ChatMemory chatMemory;
     private  final VectorStore vectorStore;
 
+    @Autowired
+    private WebSearchTools webSearchTools;
+
+    @Autowired
+    private FetchUrlTools fetchUrlTools;
     public AiChatService(
             @Qualifier("openAiChatModel") ChatModel chatModel,
             AiTemplateProperties templateProperties,
@@ -66,6 +75,7 @@ public class AiChatService {
                 //a.param(ChatMemory.CONVERSATION_ID, conversationId) 则是对哪一组会话进行操作
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
                 //开启RAG功能
+                .tools(webSearchTools,fetchUrlTools)
                 .advisors(QuestionAnswerAdvisor.builder(this.vectorStore).build(),ragAdvisor)
                 .call()
                 .content();
