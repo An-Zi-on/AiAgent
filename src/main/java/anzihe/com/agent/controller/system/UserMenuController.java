@@ -39,7 +39,7 @@ public class UserMenuController {
     }
 
     @GetMapping("/get")
-    public  BaseResponse<SysUserMenuVO> deteli (@RequestParam Long id){
+    public  BaseResponse<SysUserMenuVO> deteli (@RequestParam("id") Long id){
         SysUserMenuVO userMenuVO = BeanUtil.toBean(userMenuService.getById(id), SysUserMenuVO.class);
         return ResultUtils.success(userMenuVO);
     }

@@ -42,7 +42,7 @@ public class RoleController {
     }
 
     @GetMapping("/get/{id}")
-    public BaseResponse<SysRoleVO> detail( @PathVariable Long id ){
+    public BaseResponse<SysRoleVO> detail( @PathVariable("id") Long id ){
         return ResultUtils.success(BeanUtil.toBean(sysRoleService.getById(id), SysRoleVO.class));
     }
 
@@ -55,7 +55,7 @@ public class RoleController {
      * 查询某角色已授权的菜单 id 列表（分配权限弹窗回显用）
      */
     @GetMapping("/menu/list")
-    public BaseResponse<List<Long>> roleMenuIds(@RequestParam Long roleId) {
+    public BaseResponse<List<Long>> roleMenuIds(@RequestParam("roleId") Long roleId) {
         return ResultUtils.success(sysRoleMenuService.listMenuIdsByRoleId(roleId));
     }
 

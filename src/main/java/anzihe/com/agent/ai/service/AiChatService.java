@@ -31,8 +31,7 @@ public class AiChatService {
     private final ChatMemory chatMemory;
     private  final VectorStore vectorStore;
     private final ChatClient chatClient  ;
-    @Autowired
-    private ToolRegistrationConfig toolRegistration;
+    private final ToolRegistrationConfig toolRegistration;
 
     @Autowired
     private FetchUrlTools fetchUrlTools;
@@ -55,18 +54,20 @@ public class AiChatService {
             AiTemplateLoader promptLoader,
             PromptTemplateRenderer templateRenderer,
             ChatMemory chatMemory,
-            VectorStore vectorStore) {
+            VectorStore vectorStore,
+            ToolRegistrationConfig toolRegistration) {
         this.chatModel = chatModel;
         this.templateProperties = templateProperties;
         this.templateRegister = templateRegister;
         this.promptLoader = promptLoader;
         this.chatMemory = chatMemory;
         this.vectorStore =vectorStore;
+        this.toolRegistration = toolRegistration;
         this.chatClient = ChatClient
                 .builder(this.chatModel)
                 .defaultSystem(String.format("Current time is %s", TimeUtils.getCurrentTime()))
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .defaultTools(toolRegistration.callbacks())
+                .defaultTools((Object) this.toolRegistration.callbacks())
                 .build();
     }
 

@@ -53,7 +53,7 @@ public class MenuController {
      * 根据ID查询菜单详情
      */
     @GetMapping("/get/{id}")
-    public BaseResponse<SysMenuVO> getById(@PathVariable Long id) {
+    public BaseResponse<SysMenuVO> getById(@PathVariable("id") Long id) {
         return ResultUtils.success(menuService.getDetailById(id));
     }
     /**
@@ -65,7 +65,7 @@ public class MenuController {
     }
 
     @GetMapping("/user_tree")
-    public BaseResponse<List<SysMenuTreeVO>> getTreeByUser(@RequestParam Long  userId){
+    public BaseResponse<List<SysMenuTreeVO>> getTreeByUser(@RequestParam("userId") Long  userId){
         return ResultUtils.success(menuService.getUserMenuTree(userId));
     }
 }

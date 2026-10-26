@@ -52,8 +52,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void register(String userAccount, String password, String checkPassword) {
-        ThrowUtils.throwException(userAccount.length() < 8, ErrorCode.PARAMS_ERROR, "账号长度大于8位");
-        ThrowUtils.throwException(password.length() < 8 || checkPassword.length() < 8, ErrorCode.PARAMS_ERROR, "密码长度大于8位");
+        ThrowUtils.throwException(StrUtil.isBlank(userAccount), ErrorCode.PARAMS_ERROR, "账号不能为空");
+        ThrowUtils.throwException(userAccount.length() < UserConstant.ACCOUNT_MIN_LENGTH
+                        || userAccount.length() > UserConstant.ACCOUNT_MAX_LENGTH,
+                ErrorCode.PARAMS_ERROR, "账号长度需为 4-32 位");
+        ThrowUtils.throwException(StrUtil.isBlank(password) || StrUtil.isBlank(checkPassword),
+                ErrorCode.PARAMS_ERROR, "密码不能为空");
+        ThrowUtils.throwException(password.length() < UserConstant.PASSWORD_MIN_LENGTH
+                        || password.length() > UserConstant.PASSWORD_MAX_LENGTH,
+                ErrorCode.PARAMS_ERROR, "密码长度需为 8-64 位");
         ThrowUtils.throwException(!password.equals(checkPassword), ErrorCode.PARAMS_ERROR, "输入密码不一致");
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUserAccount,userAccount);
@@ -71,7 +78,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public String userLogin(String userAccount, String password, HttpServletRequest request) {
-        ThrowUtils.throwException(userAccount.length() < 8 || StrUtil.isEmptyIfStr(userAccount), ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwException(StrUtil.isBlank(userAccount), ErrorCode.PARAMS_ERROR, "账号不能为空");
+        ThrowUtils.throwException(userAccount.length() < UserConstant.ACCOUNT_MIN_LENGTH
+                        || userAccount.length() > UserConstant.ACCOUNT_MAX_LENGTH,
+                ErrorCode.PARAMS_ERROR, "账号长度需为 4-32 位");
+        ThrowUtils.throwException(StrUtil.isBlank(password), ErrorCode.PARAMS_ERROR, "密码不能为空");
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUserAccount, userAccount);
         User selectUser = userMapper.selectOne(queryWrapper);

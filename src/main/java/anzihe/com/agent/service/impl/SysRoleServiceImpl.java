@@ -31,8 +31,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         if (role == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        // 注意 Page 的构造是 (current, size)：这里原来把 pageSize 传了两遍，
-        // 变成 current=pageSize=10 → 偏移 90 条 → 列表永远返回空
         Page<SysRole> page = new Page<>(roleDTO.getCurrent(), roleDTO.getPageSize());
         Page<SysRole> rolePage = this.page(page, new LambdaQueryWrapper<SysRole>()
                 .like(StrUtil.isNotBlank(role.getRoleName()), SysRole::getRoleName, role.getRoleName())
@@ -47,7 +45,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         Page<SysRoleDTO> pageResult = new Page<>();
         pageResult.setCurrent(current);
         pageResult.setSize(size);
-        page.setTotal(total);
+        pageResult.setTotal(total);
         List<SysRoleDTO> roleDTOList = new ArrayList<>();
         rolePage.getRecords().forEach(item->
                         roleDTOList.add(BeanUtil.toBean(item,SysRoleDTO.class)));
