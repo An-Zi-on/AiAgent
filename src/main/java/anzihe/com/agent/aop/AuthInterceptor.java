@@ -9,6 +9,7 @@ import anzihe.com.agent.service.UserService;
 import anzihe.com.agent.utils.TokenUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,6 +20,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
+@Slf4j
 public class AuthInterceptor {
 
 
@@ -31,9 +33,11 @@ public class AuthInterceptor {
         UserRoleEnum currentRole = UserRoleEnum.getEnumByValue(currentUser.getUserRole());
         UserRoleEnum mustRole  = UserRoleEnum.getEnumByValue(authCheck.mustRole());
         if (mustRole == null){
-           return joinPoint.proceed();
+            log.error("检查该权限是否存在{}",authCheck.mustRole());
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         if (!UserRoleEnum.ADMIN.equals(currentRole) && !mustRole.equals(currentRole)){
+            log.error("需要该权限");
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         return  joinPoint.proceed();
