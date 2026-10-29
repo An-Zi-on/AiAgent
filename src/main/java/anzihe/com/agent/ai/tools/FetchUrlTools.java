@@ -5,12 +5,15 @@ import org.jsoup.nodes.Document;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +23,6 @@ import java.util.Map;
 public class FetchUrlTools {
     private  final ObjectMapper mapper = new ObjectMapper();
 
-    private final RestClient restClient = RestClient.create();
 
     @Value("${an.search.api-key}")
     private  final String apiKey = "";
@@ -68,9 +70,18 @@ public class FetchUrlTools {
             @ToolParam(description = "The search query text, e.g. 'latest AI news 2025' or 'Spring Boot 4 release notes'. " +
                     "Use concise keywords or a natural-language question. " +
                     "Do not include quotes, operators, or extra formatting unless the user explicitly asks for them.") String query) {
-
+        HttpClient httpClient = HttpClient.newBuilder()
+                //设置链接时间
+                .connectTimeout(Duration.ofSeconds(3))
+                .build();
+        JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
+        //设置读取时间
+        requestFactory.setReadTimeout(5);
         // 调用 SearchApi.io 接口，返回 JSON 字符串
-        String response = restClient.get()
+        RestClient restClient = RestClient.builder()
+                .requestFactory(requestFactory).build();
+        String response = restClient
+                .get()
                 .uri(uriBuilder -> uriBuilder
                         .scheme("https")
                         .host("www.searchapi.io")
@@ -78,7 +89,8 @@ public class FetchUrlTools {
                         .queryParam("engine", "google")
                         .queryParam("q", query)
                         .queryParam("api_key", apiKey)
-                        .build())
+                        .build()
+                )
                 .retrieve()
                 .body(String.class);
 
