@@ -1,5 +1,9 @@
 package anzihe.com.agent.ai.tools;
 
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.ai.tool.annotation.Tool;
@@ -18,14 +22,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 public class FetchUrlTools {
     private  final ObjectMapper mapper = new ObjectMapper();
 
+    private  static final OkHttpClient HTTP_CLIENT  = new OkHttpClient.Builder()
+            .connectTimeout(5,TimeUnit.SECONDS)
+            .readTimeout(10,TimeUnit.SECONDS)
+            .callTimeout(15, TimeUnit.SECONDS)
+            .followRedirects(true)
+            .build();
 
     @Value("${an.search.api-key}")
-    private  final String apiKey = "";
+    private  String apiKey = "";
 
     /**
      * 访问网址
@@ -41,14 +53,22 @@ public class FetchUrlTools {
             @ToolParam(required = true, description = "The full URL of the web page to read, e.g. 'https://example.com/article'")
             String url) {
         try {
-            Document doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-                    .timeout(10_000)
-                    .get();
-            // 移除脚本和样式，只保留正文
+            Request req = new Request.Builder()
+                    .addHeader("User-Agent", "Mozilla/5.0 ...")
+                    .url(url)
+                    .build();
+            Response resp = HTTP_CLIENT.newCall(req).execute();
+            if (!resp.isSuccessful()) {
+                log.error("{}code{}", resp.message(), resp.code());
+                throw  new IOException("Http"+resp.code());
+            }
+            if (resp.body() == null){
+                throw  new IOException("body is null");
+            }
+            String html = resp.body().toString();
+            Document doc = Jsoup.parse(html, url);
             doc.select("script, style, nav, footer, header").remove();
             String text = doc.body().text();
-            // 截断过长内容，避免超出模型上下文
             return text.length() > 8000 ? text.substring(0, 8000) + "...(truncated)" : text;
         } catch (IOException e) {
             return "Failed to fetch URL: " + e.getMessage();
