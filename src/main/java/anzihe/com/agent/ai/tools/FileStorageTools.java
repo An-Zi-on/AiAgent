@@ -18,7 +18,7 @@ import static anzihe.com.agent.model.constant.FileConstant.FILE_MAX_SIZE;
 @Slf4j
 @Component
 public class FileStorageTools {
-
+    private static final long MAX_READ_BYTES = 1024 * 1024;
     @Tool(name = "read-file",
             description = "Read the text content of a file stored in the workspace. " +
                     "Use this when the user asks to read, summarize, or answer questions about a file. " +
@@ -32,7 +32,12 @@ public class FileStorageTools {
         if (!FileUtil.exist(file) || !FileUtil.isFile(file)) {
             return "File not found: " + content;
         }
-        return FileUtil.readUtf8String(filePath);
+        if (file.length()> MAX_READ_BYTES){
+            return  "The file size exceeds the 1MB limit ";
+        }
+        String text = FileUtil.readUtf8String(filePath);
+        //可在做一层上下文本大小限制
+        return text;
     }
 
     @Tool(name = "create-file",
