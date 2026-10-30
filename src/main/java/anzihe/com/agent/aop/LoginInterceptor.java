@@ -1,7 +1,10 @@
 package anzihe.com.agent.aop;
 
+import anzihe.com.agent.common.ResultUtils;
+import anzihe.com.agent.exception.ErrorCode;
 import anzihe.com.agent.utils.TokenUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +13,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.messaging.handler.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
 
 /**
  * 全局登入拦截
@@ -34,8 +39,9 @@ public class LoginInterceptor implements HandlerInterceptor {
         String token = request.getHeader("token");
         if(StrUtil.isBlank(token)|| !TokenUtil.verify(token)){
             log.error("用户未登入,访问当前路径为{}",request.getPathInfo());
-            //未登入重定向到登入页面
-            response.sendRedirect(request.getContextPath()+"/login.html");
+            String json = JSONUtil.toJsonPrettyStr(ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR, "用户未登入"));
+            writeJson(response,ErrorCode.NOT_LOGIN_ERROR.getCode(),json);
+            //重定向交给前端处理
             return false;
         }
 
@@ -70,6 +76,15 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
         HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+    }
+
+
+    private void writeJson(HttpServletResponse response, int status, Object body) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json;charset=UTF-8");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(JSONUtil.toJsonStr(body));
+        response.getWriter().flush();
     }
 
 }

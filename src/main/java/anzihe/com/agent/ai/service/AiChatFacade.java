@@ -19,9 +19,7 @@ public class AiChatFacade {
     @Resource
     private UserService userService;
     public  AiChatFacade(AiChatService aiChatService){
-
         this.aiChatService = aiChatService;
-
     }
 
     public  String doChat(String message, HttpServletRequest request) {

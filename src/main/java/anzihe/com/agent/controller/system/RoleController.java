@@ -11,6 +11,8 @@ import anzihe.com.agent.service.SysRoleMenuService;
 import anzihe.com.agent.service.SysRoleService;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.Valid;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
@@ -47,7 +49,7 @@ public class RoleController {
     }
 
     @PostMapping("/page")
-    public BaseResponse<Page<SysRoleDTO>> getList(SysRoleDTO roleDTO) {
+    public BaseResponse<Page<SysRoleDTO>> getList(@Valid SysRoleDTO roleDTO) {
         return ResultUtils.success(sysRoleService.getlist(roleDTO));
     }
 

@@ -101,7 +101,6 @@ public class MyLoggerAdvisor implements CallAdvisor, StreamAdvisor {
                     convId, costMs, e.getMessage());
         }
     }
-
     /** 截断过长内容 */
     private String abbreviate(String text) {
         if (text == null) return "null";

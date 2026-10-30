@@ -68,7 +68,8 @@ public class FetchUrlTools {
             String html = resp.body().toString();
             Document doc = Jsoup.parse(html, url);
             doc.select("script, style, nav, footer, header").remove();
-            String text = doc.body().text();
+            String text = doc.body().toString();
+            resp.close();
             return text.length() > 8000 ? text.substring(0, 8000) + "...(truncated)" : text;
         } catch (IOException e) {
             return "Failed to fetch URL: " + e.getMessage();

@@ -48,7 +48,7 @@ public class MenuController {
      * 删除菜单
      */
     @AuthCheck(mustRole = UserConstant.USER_ADMIN)
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     public BaseResponse<Void> delete(DeleteRequest deleteRequest) {
         menuService.delete(deleteRequest);
         return ResultUtils.success(null);
