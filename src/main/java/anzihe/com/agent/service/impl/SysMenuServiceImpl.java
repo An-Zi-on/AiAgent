@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -68,6 +69,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     }
 
     @Override
+    @Transactional
     public void delete(DeleteRequest id) {
         SysMenu exist = this.getById(id.getId());
         if (BeanUtil.isEmpty(exist)) {
@@ -75,6 +77,20 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         }
         boolean b = this.removeById(exist);
         if (!b) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+        }
+        Long parentId = exist.getParentId();
+        LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<SysMenu>().eq(SysMenu::getParentId,id.getId());
+        List<SysMenu> list = this.list(wrapper);
+        if (BeanUtil.isEmpty(list)) {
+                return;
+        }
+        for (SysMenu sysMenu : list){
+            sysMenu.setParentId(parentId);
+            sysMenu.setUpdateTime(new Date());
+        }
+        boolean updateFlag = saveOrUpdateBatch(list);
+        if (!updateFlag){
             throw new BusinessException(ErrorCode.SYSTEM_ERROR);
         }
     }
