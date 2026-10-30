@@ -177,7 +177,6 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    @AuthCheck(mustRole = UserConstant.USER_ADMIN)
     public BaseResponse<?> update(@RequestBody UserUpdateRequest userUpdateRequest) {
         ThrowUtils.throwException(userUpdateRequest == null || userUpdateRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
         User user = new User();

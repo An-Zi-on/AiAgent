@@ -1,8 +1,10 @@
 package anzihe.com.agent.controller.system;
 
+import anzihe.com.agent.annotation.AuthCheck;
 import anzihe.com.agent.common.BaseResponse;
 import anzihe.com.agent.common.DeleteRequest;
 import anzihe.com.agent.common.ResultUtils;
+import anzihe.com.agent.common.UserConstant;
 import anzihe.com.agent.model.DTO.menu.SysMenuDTO;
 import anzihe.com.agent.model.VO.menu.SysMenuTreeVO;
 import anzihe.com.agent.model.VO.menu.SysMenuVO;
@@ -25,6 +27,7 @@ public class MenuController {
     /**
      * 新增菜单
      */
+    @AuthCheck(mustRole = UserConstant.USER_ADMIN)
     @PostMapping("/save")
     public BaseResponse<Void> save(@RequestBody SysMenuDTO dto) {
         menuService.save(dto);
@@ -34,6 +37,7 @@ public class MenuController {
     /**
      * 修改菜单
      */
+    @AuthCheck(mustRole = UserConstant.USER_ADMIN)
     @PutMapping("/update")
     public BaseResponse<Void> update(@RequestBody SysMenuDTO dto) {
         menuService.update(dto);
@@ -43,6 +47,7 @@ public class MenuController {
     /**
      * 删除菜单
      */
+    @AuthCheck(mustRole = UserConstant.USER_ADMIN)
     @DeleteMapping("/delete/{id}")
     public BaseResponse<Void> delete(DeleteRequest deleteRequest) {
         menuService.delete(deleteRequest);
