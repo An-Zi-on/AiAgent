@@ -1,0 +1,8 @@
+spring:
+  ai:
+    mcp:
+      server:
+        name: an-search-mcp
+        version: 1.0.0
+        type: sync
+        stdio: true
