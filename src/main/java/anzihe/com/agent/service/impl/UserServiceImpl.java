@@ -117,8 +117,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public String getEncryptPassword(String text) {
-        return SecureUtil.md5(text + UserConstant.USER_PASSWORD_SALT);
+    public String getEncryptPassword(String cleartext) {
+        return SecureUtil.md5(cleartext + UserConstant.USER_PASSWORD_SALT);
     }
 
     @Override

@@ -4,6 +4,26 @@ spring:
       max-file-size: 2MB
       max-request-size: 2MB
   ai:
+    mcp:
+      client:
+        enabled: true
+        name: an-ai-mcp-client
+        version: 1.0.0
+        ## 是否启启动时开始初始化mcp  否则是惰性初始化(第一次调用mcp工具时初始化mcp)
+        initialized: false
+        request-timeout: 20s
+        toolcallback:
+          enabled: true
+        # mcp 返回返回方式 同步还是异步
+        type: sync
+        # 使用stdio链接方式
+#        stdio:
+#          servers-configuration: classpath:mcp-server.json
+        sse:
+          connections:
+            image-search-server: # 这个名称可以自定义
+              url: http://localhost:8128  # 你的 MCP Server 地址
+              sse-endpoint: /sse  # 默认就是 /sse，如果你的服务端没改可以省略
     chat:
       memory:
         repository:
@@ -17,9 +37,7 @@ spring:
         api-key: sk-ws-H.PXMYPMX.LyVQ.MEYCIQCLs7mGgH2FWV-SDEbRHQc6xCHJCQQhzY0uptb2a9GhyAIhANHM4LZX0aLVmzQ1QnOFECjfbuQDPH36kZt3Q8n5B8ZR
         model: qwen3.7-text-embedding
       chat:
-        model: glm-5.3-flashx
-
-
+        model: glm-5.3-flash
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -98,7 +116,6 @@ ai:
         user-template: |
           用户回答：{answer}
           请继续提问。
-       
 an:
     search:
       api-key: MxFUqfEBFHhG4DhtD6XbcYS5

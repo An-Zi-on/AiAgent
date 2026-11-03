@@ -66,6 +66,12 @@
 
     <!-- ==================== 依赖 ==================== -->
     <dependencies>
+        <!--Mcp stdio-->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-client</artifactId>
+        </dependency>
+
         <!-- jsoup 联网搜索 -->
         <dependency>
             <groupId>org.jsoup</groupId>

@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "image-search-server": {
+      "command": "java",
+      "args": [
+        "-Dlogging.level.root=OFF",
+        "-Dspring.ai.mcp.server.stdio=true",
+        "-Dspring.main.web-application-type=none",
+        "-Dspring.main.banner-mode=off",
+        "-jar",
+        "C:\\Users\\qq529\\Desktop\\yhwork\\yanxue\\an-image-search-mcp\\target\\an-image-search-mcp-0.0.1-SNAPSHOT.jar"
+      ],
+      "env": {
+        "JAVA_TOOL_OPTIONS": "-Dfile.encoding=UTF-8"
+      }
+    }
+  }
+}

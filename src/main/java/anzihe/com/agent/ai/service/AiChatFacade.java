@@ -32,6 +32,10 @@ public class AiChatFacade {
         return aiChatService.chatStream(message,String.valueOf(userVO.getId()));
     }
 
+    public  String doChatWithMcp(String message,String conversionId){
+        return aiChatService.chatWithMcp(message,conversionId);
+    }
+
 //    public String doScene(String conversionId, String question) {
 //        return aiChatService.doScene("knowledge", Map.of("question", question), conversionId);
 //    }

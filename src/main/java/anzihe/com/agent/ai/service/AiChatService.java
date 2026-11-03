@@ -2,9 +2,9 @@ package anzihe.com.agent.ai.service;
 
 import anzihe.com.agent.ai.config.AiTemplateProperties;
 import anzihe.com.agent.ai.config.ToolRegistrationConfig;
-import anzihe.com.agent.ai.template.AiTemplateLoader;
-import anzihe.com.agent.ai.template.AiTemplateRegister;
-import anzihe.com.agent.ai.template.PromptTemplateRenderer;
+//import anzihe.com.agent.ai.template.AiTemplateLoader;
+//import anzihe.com.agent.ai.template.AiTemplateRegister;
+//import anzihe.com.agent.ai.template.PromptTemplateRenderer;
 import anzihe.com.agent.ai.tools.FetchUrlTools;
 import anzihe.com.agent.utils.TimeUtils;
 import jakarta.annotation.Resource;
@@ -15,6 +15,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,14 +26,15 @@ import reactor.core.publisher.Flux;
 @Service
 public class AiChatService {
     private final ChatModel chatModel;
-    private final AiTemplateRegister templateRegister;
+//    private final AiTemplateRegister templateRegister;
     private final AiTemplateProperties templateProperties;
-    private final AiTemplateLoader promptLoader;
+//    private final AiTemplateLoader promptLoader;
     private final ChatMemory chatMemory;
-    private  final VectorStore vectorStore;
+//    private  final VectorStore vectorStore;
     private final ChatClient chatClient  ;
     private final ToolRegistrationConfig toolRegistration;
-
+    @Resource
+    private ToolCallbackProvider toolCallbackProvider;
     @Autowired
     private FetchUrlTools fetchUrlTools;
 
@@ -41,27 +43,25 @@ public class AiChatService {
      * 配置默认的ChatClient  tools advisor system提示词
      * @param chatModel
      * @param templateProperties
-     * @param templateRegister
-     * @param promptLoader
-     * @param templateRenderer
+//   * @param templateRegister
+//    * @param promptLoader
+//    * @param templateRenderer
      * @param chatMemory
-     * @param vectorStore
+//    * @param vectorStore
      */
     public AiChatService(
             @Qualifier("openAiChatModel") ChatModel chatModel,
             AiTemplateProperties templateProperties,
-            AiTemplateRegister templateRegister,
-            AiTemplateLoader promptLoader,
-            PromptTemplateRenderer templateRenderer,
+//            AiTemplateRegister templateRegister,
+//            AiTemplateLoader promptLoader,//           PromptTemplateRenderer templateRenderer,
             ChatMemory chatMemory,
-            VectorStore vectorStore,
+//            VectorStore vectorStore,
             ToolRegistrationConfig toolRegistration) {
         this.chatModel = chatModel;
         this.templateProperties = templateProperties;
-        this.templateRegister = templateRegister;
-        this.promptLoader = promptLoader;
+//        this.templateRegister = templateRegister;//       this.promptLoader = promptLoader;
         this.chatMemory = chatMemory;
-        this.vectorStore =vectorStore;
+//       this.vectorStore =vectorStore;
         this.toolRegistration = toolRegistration;
         this.chatClient = ChatClient
                 .builder(this.chatModel)
@@ -98,6 +98,17 @@ public class AiChatService {
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
                 .tools()
                 .stream()
+                .content();
+    }
+
+    public String chatWithMcp(String message,String conversationId) {
+        return this.chatClient
+                .prompt()
+                .user(message)
+                .advisors()
+                .tools(toolCallbackProvider)
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .call()
                 .content();
     }
 
